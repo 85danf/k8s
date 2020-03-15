@@ -1,0 +1,19 @@
+DEPLOYMENT=$1
+CONTEXT="$(kubectl config current-context)"
+WORK_DIR="/Users/dan/work/k8s/clusters/${CONTEXT}/${DEPLOYMENT}"
+LOG_FILE="${WORK_DIR}/telepresence.log"
+ENV_JSON="${WORK_DIR}/${DEPLOYMENT}_env.json"
+MOUNT_DIR="/tmp/telepresence_root"
+SECRETS_LINK="/var/run/secrets"
+SECRETS_MOUNT="${MOUNT_DIR}/var/run/secrets/"
+
+echo "Swapping deployment $DEPLOYMENT"
+echo "Using workdir $WORK_DIR"
+mkdir -p ${WORK_DIR}
+rm -f ${ENV_JSON}
+rm -f ${WORK_DIR}/telepresence.log
+
+# LN_COMMAND="sleep 35 && sudo rm -f ${SECRETS_LINK} && sudo ln -s  ${SECRETS_MOUNT} ${SECRETS_LINK}"
+COMMAND="telepresence --swap-deployment $1 --env-json $ENV_JSON --mount=$MOUNT_DIR --namespace runai --logfile ${LOG_FILE}"
+# eval "${LN_COMMAND}" & eval "${COMMAND}"
+eval "${COMMAND}"

@@ -1,0 +1,75 @@
+MULTI_NODE='false'
+K8S_VER='latest'
+CLUSTER_NAME='k8s-local'
+BASEDIR="$HOME/work/k8s/kind"
+CONFIG_DIR="${BASEDIR}/.kube"
+ 
+while test $# -gt 0; do
+  case "$1" in
+    -h|--help)
+      echo "kind cluster setup"
+      echo " "
+      echo "Usage: kind-multinode [options]"
+      echo " "
+      echo "options:"
+      echo "-h, --help                    Show this, duh"
+      echo "-m --multinode [1\2\3]        Start a 1\2\3 node cluster (don't pass this to get a cluster with just the control plane)"
+      echo "-v --version [version]        Start cluster with version [version]"
+      echo "-n --name [name]              Name the cluster [name]"
+      return 0
+      ;;
+    -m|--multinode)
+      shift
+      if test $# -gt 0; then
+        if [[ "$1" =~ ^(1|2|3)$ ]]; then
+          MULTI_NODE=$1
+        else
+        echo "Cluster size can be one of [1/2/3]"
+        return 1
+        fi
+      else
+        echo "Cluster size not specified"
+        return 1
+      fi
+      ;;
+    -v|--version)
+      shift
+      if test $# -gt 0; then
+        K8S_VER=$1
+      else
+        echo "Cluster version not specified"
+        return 1
+      fi
+      ;;
+    -n|--name)
+      shift
+      if test $# -gt 0; then
+        CLUSTER_NAME=$1
+      else
+        echo "Cluster name not specified"
+        return 1
+      fi
+      ;;
+    *)
+      break
+      ;;
+  esac
+  shift
+done
+ 
+COMMAND="kind create cluster --name ${CLUSTER_NAME} "
+ 
+if [[ ${MULTI_NODE} != "false" ]]; then
+    COMMAND+=" --config $BASEDIR/kind-multinode-$MULTI_NODE.yaml "
+fi
+ 
+if [[ ${K8S_VER} != "latest" ]]; then
+    COMMAND+=" --image=kindest/node:v${K8S_VER} "
+fi
+ 
+eval "${COMMAND}"
+mkdir -p ${CONFIG_DIR}
+kind export kubeconfig --kubeconfig "${CONFIG_DIR}/${CLUSTER_NAME}.config" --name "${CLUSTER_NAME}"
+kubectl ctx "kind-${CLUSTER_NAME}"
+kubectl apply -f ${BASEDIR}/namespace.yaml
+kubectl ns runai
