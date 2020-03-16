@@ -14,6 +14,6 @@ rm -f ${ENV_JSON}
 rm -f ${WORK_DIR}/telepresence.log
 
 # LN_COMMAND="sleep 35 && sudo rm -f ${SECRETS_LINK} && sudo ln -s  ${SECRETS_MOUNT} ${SECRETS_LINK}"
-COMMAND="telepresence --swap-deployment $1 --env-json $ENV_JSON --mount=$MOUNT_DIR --namespace runai --logfile ${LOG_FILE}"
+
 # eval "${LN_COMMAND}" & eval "${COMMAND}"
-eval "${COMMAND}"
+telepresence --swap-deployment $1 --env-json $ENV_JSON --mount=$MOUNT_DIR --namespace runai --logfile ${LOG_FILE}
