@@ -1,3 +1,4 @@
 clusters/
 .git/
 kind/.kube/
+.DS_STORE
