@@ -13,5 +13,5 @@ nodes:
 #       name: config
 #     apiServer:
 #       extraArgs:
-#         "oidc-issuer-url": "https://dev-r7sitbwp.auth0.com/"
-#         "oidc-client-id": "JCNsuE8anXAaZtLPnblPifX205sQDjRW"
+#         "oidc-issuer-url": "https://"
+#         "oidc-client-id": ""
